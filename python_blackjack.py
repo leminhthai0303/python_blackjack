@@ -38,6 +38,8 @@ def is_blackjack(hand):
     elif 'Ace' in second_card:
         if 'J' in first_card or 'Q' in first_card or 'K' in first_card or int(value1) == 10:
             return True
+    elif 'Ace' in first_card and 'Ace' in second_card:
+        return True
     else:
         return False
 
@@ -52,12 +54,13 @@ def player_hand(deck):
     hand.append(deal(deck))
     hand.append(deal(deck))
 
+
     if is_blackjack(hand):
         for c in hand:
-            print(c, end="  ", sep=" || ")
-            print("BLACKJACK!!! YOU WIN!!!")
+            print(c)
+        return True
     else:
-        #print points and cards on the hand 
+    #print points and cards on the hand 
         for c in hand:
             p = point(p,c)
             print(f"{c} || {p}")
@@ -75,10 +78,10 @@ def player_hand(deck):
                 break
             if p > 21:
                 print("You are BUSTED")
-    return p
+        return p
     
 
-def dealer_hand(deck):
+def dealer_hand(deck, player):
     #Init default hand values
     hand = []
     p = 0
@@ -89,8 +92,8 @@ def dealer_hand(deck):
 
     if is_blackjack(hand):
         for c in hand:
-            print(c, end="", sep=" || ")
-            print("BLACKJACK!!! YOU LOSE!!!")
+            print(c)
+        return True
     else:
         #print points and cards on the hand 
         for c in hand:
@@ -98,7 +101,7 @@ def dealer_hand(deck):
             print(f"{c} || {p}")
         #Hit or Stand
         while p < 21:
-            if p <= 16:
+            if (p <= 16 and player < 22) or (player > 21 and p <= 16):
                 c = deal(deck)
                 hand.append(c)
                 p = point(p, c)
@@ -107,27 +110,32 @@ def dealer_hand(deck):
                 break
             if p > 21:
                 print("Dealer is BUSTED")
-    return p
+        return p
 
 def main():
     deck = create_a_deck()
-    while True:
-        player = player_hand(deck)
-        break
+    player = player_hand(deck)
     print("==============================================PLAYER TURN ENDED==============================================")
-    dealer = dealer_hand(deck)
+    dealer = dealer_hand(deck, player)
     print("==============================================DEALER TURN ENDED==============================================")
-    if player <= 21 and dealer <= 21:
-        if player > dealer:
-            print("You WIN!!!")
-        elif player == dealer:
-            print("Draw")
-        else:
+    if player != True and dealer != True:
+        if player <= 21 and dealer <= 21:
+            if player > dealer:
+                print("You WIN!!!")
+            elif player == dealer:
+                print("Draw")
+            else:
+                print("You LOSE!!!")
+        elif player > 21 and dealer <= 21:
             print("You LOSE!!!")
-    elif player > 21 and dealer <= 21:
-        print("You LOSE!!!")
-    elif player <= 21 and dealer > 21:
-        print("You win")
-    elif player > 21 and dealer > 21:
-        print("Draw")
-main()
+        elif player <= 21 and dealer > 21:
+            print("You win")
+        elif player > 21 and dealer > 21:
+            print("Draw")
+    elif player != True and dealer == True:
+        print('THE DEALER GOT BLACKJACK!!! YOU LOSE!!!')
+    elif player == True and dealer != True:
+        print('BLACKJACK!!! YOU WIN!!!')
+
+if __name__ == '__main__':
+    main()
